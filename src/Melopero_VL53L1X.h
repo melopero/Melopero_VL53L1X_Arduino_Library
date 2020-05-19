@@ -20,7 +20,7 @@ class Melopero_VL53L1X {
         VL53L1_UserRoi_t userROI;
         VL53L1_RangingMeasurementData_t measurementData;
         bool dataReady;
-        VL53L1_DetectionConfig_t thresholdConfig;
+        VL53L1_DetectionConfig_t interruptConfig;
         char errorString[VL53L1_MAX_STRING_LENGTH];
 
     //Methods
@@ -52,10 +52,10 @@ class Melopero_VL53L1X {
         VL53L1_Error getRangingMeasurementData();
 
         //Interrupt functions
-        VL53L1_Error enableInterruptOnDataReady(bool enable = true);
-        VL53L1_Error enableInterruptOnDistance(bool enable = true);
-        VL53L1_Error setDistanceInterruptConfig(VL53L1_ThresholdMode mode, uint16_t high, uint16_t low);
-        VL53L1_Error getDistanceInterruptConfig();
+        VL53L1_Error enableInterruptOnDataReady();
+        VL53L1_Error enableInterruptOnDistance(VL53L1_ThresholdMode mode, uint16_t high, uint16_t low);
+        VL53L1_Error disableInterrupt();
+        VL53L1_Error getInterruptConfig();
 
         VL53L1_Error getErrorDescription(VL53L1_Error error);
 };

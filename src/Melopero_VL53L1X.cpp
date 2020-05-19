@@ -90,10 +90,22 @@ VL53L1_Error Melopero_VL53L1X::getRangingMeasurementData(){
 }
 
 //Interrupt functions
-VL53L1_Error Melopero_VL53L1X::enableInterruptOnDataReady(bool enable = true);
-VL53L1_Error Melopero_VL53L1X::enableInterruptOnDistance(bool enable = true);
-VL53L1_Error Melopero_VL53L1X::setDistanceInterruptConfig(VL53L1_ThresholdMode mode, uint16_t high, uint16_t low);
-VL53L1_Error Melopero_VL53L1X::getDistanceInterruptConfig();
+VL53L1_Error Melopero_VL53L1X::enableInterruptOnDataReady(){
+    interruptConfig.DetectionMode = VL53L1_DETECTION_NORMAL_RUN;
+    return VL53L1_SetThresholdConfig(device, &interruptConfig);
+}
+
+VL53L1_Error Melopero_VL53L1X::enableInterruptOnDistance(VL53L1_ThresholdMode mode, uint16_t high, uint16_t low){
+    interruptConfig.DetectionMode = VL53L1_DETECTION_DISTANCE_ONLY;
+    interruptConfig.Distance.CrossMode = mode;
+    interruptConfig.Distance.High = high;
+    interruptConfig.Distance.Low = low;
+    return VL53L1_SetThresholdConfig(device, &interruptConfig);
+}
+
+VL53L1_Error Melopero_VL53L1X::getInterruptConfig(){
+    return VL53L1_GetThresholdConfig(device, &interruptConfig);
+}
 
 VL53L1_Error Melopero_VL53L1X::getErrorDescription(VL53L1_Error error){
     return VL53L1_GetPalErrorString(error, errorString);
