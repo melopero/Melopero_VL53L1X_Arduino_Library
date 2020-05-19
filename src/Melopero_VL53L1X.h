@@ -3,10 +3,10 @@
 #define Melopero_VL53L1X_H_INCLUDED
 
 #include "Arduino.h"
-#include "vl53l1_api.h"
-#include "vl53l1_error_codes.h"
-#include "vl53l1_error_strings.h"
-#include "vl53l1_platform_user_data.h"
+#include "api/vl53l1_api.h"
+#include "api/vl53l1_error_codes.h"
+#include "api/vl53l1_error_strings.h"
+#include "api/vl53l1_platform_user_data.h"
 
 #define DEFAULT_I2C_ADDRESS 0x52
 
@@ -14,6 +14,7 @@ class Melopero_VL53L1X {
     //Members
     public:
         VL53L1_DEV device;
+        VL53L1_PresetModes presetMode;
         VL53L1_DistanceModes distanceMode;
         uint32_t measurementTimingBudgetMicros;
         uint32_t interMeasurementPeriodMillis;
@@ -34,6 +35,8 @@ class Melopero_VL53L1X {
         VL53L1_Error waitDeviceBooted();
 
         //Parameters
+        VL53L1_Error setPresetMode(VL53L1_PresetModes mode);
+        VL53L1_Error getPresetMode();
         VL53L1_Error setDistanceMode(VL53L1_DistanceModes newDistanceMode);
         VL53L1_Error getDistanceMode();
         VL53L1_Error setMeasurementTimingBudgetMicroSeconds(uint32_t measurementTimingBudgetMicroSeconds);

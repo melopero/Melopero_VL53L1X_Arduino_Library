@@ -3,7 +3,7 @@
 #include "Wire.h"
 
 Melopero_VL53L1X::Melopero_VL53L1X(uint8_t i2cAddr){
-    device.I2cDevAddr = i2cAddr;
+    device->I2cDevAddr = i2cAddr;
     Wire.begin();
 }
 
@@ -25,6 +25,14 @@ VL53L1_Error Melopero_VL53L1X::waitDeviceBooted(){
 }
 
 //Parameters
+VL53L1_Error Melopero_VL53L1X::setPresetMode(VL53L1_PresetModes mode){
+    return VL53L1_SetPresetMode(device, mode);
+}
+
+VL53L1_Error Melopero_VL53L1X::getPresetMode(){
+    return VL53L1_GetPresetMode(device, &presetMode);
+}
+
 VL53L1_Error Melopero_VL53L1X::setDistanceMode(VL53L1_DistanceModes newDistanceMode){
     return VL53L1_SetDistanceMode(device, newDistanceMode);
 }
