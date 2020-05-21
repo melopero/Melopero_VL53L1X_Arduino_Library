@@ -271,6 +271,7 @@ VL53L1_Error VL53L1_GetTickCount(
 	uint32_t *ptick_count_ms)
 {
 	VL53L1_Error status  = VL53L1_ERROR_NONE;
+    *ptick_count_ms = millis();
 	return status;
 }
 
