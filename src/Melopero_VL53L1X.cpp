@@ -5,7 +5,6 @@
 Melopero_VL53L1X::Melopero_VL53L1X(uint8_t i2cAddr){
     device = &dev;
     device->I2cDevAddr = i2cAddr;
-    Wire.begin();
 }
 
 //Device initialization functions
@@ -13,6 +12,32 @@ VL53L1_Error Melopero_VL53L1X::setDeviceAddress(uint8_t newAddress){
     VL53L1_Error status =  VL53L1_SetDeviceAddress(device, newAddress);
     getErrorDescription(status);
     return status;
+}
+
+VL53L1_Error Melopero_VL53L1X::initDevice(){
+    Wire.begin();
+    VL53L1_Error stat = 0;
+    stat = softwareReset();
+    getErrorDescription(stat);
+    if (stat != VL53L1_ERROR_NONE) return stat;
+    stat = waitDeviceBooted();
+    getErrorDescription(stat);
+    if (stat != VL53L1_ERROR_NONE) return stat;
+    stat = dataInit();
+    getErrorDescription(stat);
+    if (stat != VL53L1_ERROR_NONE) return stat;
+    stat = staticInit();
+    getErrorDescription(stat);
+    if (stat != VL53L1_ERROR_NONE) return stat;
+    stat = setDistanceMode(VL53L1_DISTANCEMODE_LONG);
+    getErrorDescription(stat);
+    if (stat != VL53L1_ERROR_NONE) return stat;
+    stat = setMeasurementTimingBudgetMicroSeconds(66000);
+    getErrorDescription(stat);
+    if (stat != VL53L1_ERROR_NONE) return stat;
+    stat = setInterMeasurementPeriodMilliSeconds(50);
+    getErrorDescription(stat);
+    return stat;
 }
 
 VL53L1_Error Melopero_VL53L1X::dataInit(){

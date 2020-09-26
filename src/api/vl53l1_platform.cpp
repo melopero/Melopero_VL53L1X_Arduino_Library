@@ -237,8 +237,8 @@ VL53L1_Error VL53L1_RdWord(VL53L1_DEV Dev, uint16_t index, uint16_t *data) {
 
     Wire.requestFrom(Dev->I2cDevAddr, 2);
     if(Wire.available() >= 2){
-        *data |= (Wire.read() << 8);
-        *data |= Wire.read();
+        *data |= (uint16_t) (Wire.read() << 8);
+        *data |= (uint16_t)  Wire.read();
     }
     else {
         Status = VL53L1_ERROR_CONTROL_INTERFACE;
@@ -254,12 +254,12 @@ VL53L1_Error VL53L1_RdDWord(VL53L1_DEV Dev, uint16_t index, uint32_t *data) {
     uint8_t i2cStatus = Wire.endTransmission();
     if (i2cStatus != 0) return VL53L1_ERROR_CONTROL_INTERFACE;
 
-    Wire.requestFrom(Dev->I2cDevAddr, 2);
+    Wire.requestFrom(Dev->I2cDevAddr, 4);
     if(Wire.available() >= 4){
-        *data |= (Wire.read() << 24);
-        *data |= (Wire.read() << 16);
-        *data |= (Wire.read() << 8);
-        *data |= Wire.read();
+        *data |= (uint32_t) (Wire.read() << 24);
+        *data |= (uint32_t) (Wire.read() << 16);
+        *data |= (uint32_t) (Wire.read() << 8);
+        *data |= (uint32_t) Wire.read();
     }
     else {
         Status = VL53L1_ERROR_CONTROL_INTERFACE;
@@ -285,8 +285,7 @@ VL53L1_Error VL53L1_GetTickCount(
 
 VL53L1_Error VL53L1_GetTimerFrequency(int32_t *ptimer_freq_hz)
 {
-	VL53L1_Error status  = VL53L1_ERROR_NONE;
-	return status;
+		return VL53L1_ERROR_NOT_IMPLEMENTED;
 }
 
 VL53L1_Error VL53L1_WaitMs(VL53L1_Dev_t *pdev, int32_t wait_ms){
@@ -311,6 +310,16 @@ VL53L1_Error VL53L1_WaitValueMaskEx(
 	uint8_t       mask,
 	uint32_t      poll_delay_ms)
 {
-	VL53L1_Error status  = VL53L1_ERROR_NONE;
-	return status;
+	 uint8_t data;
+  VL53L1_Error status;
+
+  while (timeout_ms > 0){
+    status = VL53L1_RdByte(pdev, index, &data);
+    if (status != VL53L1_ERROR_NONE) { return status; }
+    if ((data & mask) == value) { return VL53L1_ERROR_NONE; }
+    delay(poll_delay_ms);
+    timeout_ms -= min(poll_delay_ms, timeout_ms);
+  }
+
+  return VL53L1_ERROR_TIME_OUT;
 }
