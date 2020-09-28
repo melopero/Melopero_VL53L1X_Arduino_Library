@@ -89,6 +89,8 @@ VL53L1_Error Melopero_VL53L1X::getDistanceMode(){
     return status;
 }
 
+/*  Timing budget is the time required by the sensor to perform one range measurement. The minimum and maximum 
+    timing budgets are [20 ms, 1000 ms] */
 VL53L1_Error Melopero_VL53L1X::setMeasurementTimingBudgetMicroSeconds(uint32_t measurementTimingBudgetMicroSeconds){
     VL53L1_Error status = VL53L1_SetMeasurementTimingBudgetMicroSeconds(device, measurementTimingBudgetMicroSeconds);
     getErrorDescription(status);
@@ -101,6 +103,8 @@ VL53L1_Error Melopero_VL53L1X::getMeasurementTimingBudgetMicroSeconds(){
     return status;
 }
 
+/*  Sets the inter-measurement period (the delay between two ranging operations) in milliseconds. The minimum 
+    inter-measurement period must be longer than the timing budget + 4 ms.*/
 VL53L1_Error Melopero_VL53L1X::setInterMeasurementPeriodMilliSeconds (uint32_t interMeasurementPeriodMilliSeconds){
     VL53L1_Error status = VL53L1_SetInterMeasurementPeriodMilliSeconds(device, interMeasurementPeriodMilliSeconds);
     getErrorDescription(status);

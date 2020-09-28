@@ -6,37 +6,46 @@ void setup() {
   Serial.begin(115200);
   while(!Serial);
   Serial.println("Starting...");
-  VL53L1_Error stat = 0;
-  Serial.println(stat);
-  Serial.println(sensor.errorString);
-  Serial.println("SR done...");
-  stat = sensor.waitDeviceBooted();
-  Serial.println(stat);
-  //Serial.println(sensor.errorString);
-  sensor.dataInit();
-  Serial.println("DATA INIT done...");
-  //Serial.println(sensor.errorString);
-  sensor.staticInit();
-  Serial.println("STATIC INIT done...");
-  //Serial.println(sensor.errorString);
-  Serial.println("Device Initialized...");
+
+  VL53L1_Error status = 0;
+  status = sensor.initDevice();
+  printStatus("Device initialized : ", status);
   
-  /* (1) Three important functions to use to configure the sensor in fast mode */
-  /*Device preset modes:
-   * VL53L1_PRESETMODE_AUTONOMOUS
-   * VL53L1_PRESETMODE_LITE_RANGING
-   * VL53L1_PRESETMODE_LOWPOWER_AUTONOMOUS*/
-  sensor.setPresetMode(VL53L1_PRESETMODE_AUTONOMOUS);
-  sensor.setDistanceMode(VL53L1_DISTANCEMODE_MEDIUM);
-  sensor.setMeasurementTimingBudgetMicroSeconds(10000);
+  status = sensor.setDistanceMode(VL53L1_DISTANCEMODE_MEDIUM);
+  printStatus("Set distance mode : ", status);
+
+  /*  Timing budget is the time required by the sensor to perform one range 
+   *  measurement. The minimum and maximum timing budgets are [20 ms, 1000 ms] */
+  status = sensor.setMeasurementTimingBudgetMicroSeconds(10000);
+  printStatus("Set timing budget: ", status);
+
+  /*  Sets the inter-measurement period (the delay between two ranging operations) in milliseconds. The minimum 
+   *  inter-measurement period must be longer than the timing budget + 4 ms.*/
+  status = sensor.setInterMeasurementPeriodMilliSeconds(20);
+  printStatus("Set inter measurement time: ", status);
+
+  //If the above constraints are not respected the status is -4: VL53L1_ERROR_INVALID_PARAMS
+
   sensor.startMeasurement();
 }
 
 void loop() {
-  sensor.waitMeasurementDataReady();
-  sensor.getRangingMeasurementData();
-  sensor.clearInterruptAndStartMeasurement();
+  VL53L1_Error status = 0;
+
+  status = sensor.waitMeasurementDataReady();
+  if (status != VL53L1_ERROR_NONE) printStatus("Error in wait data ready: ", status);
+
+  status = sensor.getRangingMeasurementData();
+  if (status != VL53L1_ERROR_NONE) printStatus("Error in get measurement data: ", status);
+
+  status = sensor.clearInterruptAndStartMeasurement();
+  if (status != VL53L1_ERROR_NONE) printStatus("Error in clear interrupts: ", status);
 
   Serial.print((float)sensor.measurementData.RangeMilliMeter + (float)sensor.measurementData.RangeFractionalPart/256.0);
   Serial.println(" mm");
+}
+
+void printStatus(string msg, int status){
+  Serial.print(msg);
+  Serial.println(status);
 }
