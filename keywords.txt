@@ -1,4 +1,4 @@
-# Syntax Coloring Map For Melopero AMG8833
+# Syntax Coloring Map For Melopero VL53l1X
 
 # Datatypes (KEYWORD1)
 Melopero_VL53L1X	KEYWORD1
