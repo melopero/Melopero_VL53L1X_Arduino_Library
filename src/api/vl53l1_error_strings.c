@@ -79,6 +79,8 @@
 		status, fmt, ##__VA_ARGS__)
 
 
+#define VL53L1_DEBUG // add error strings
+
 #ifndef VL53L1_DEBUG
 	#define VL53L1_USE_EMPTY_STRING
 #endif
