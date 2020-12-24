@@ -1,6 +1,6 @@
 # Melopero_VL53L1X_Arduino_Library
 
-**Warning:** This library is based on the STMicroelectronics API for the vl53l1x sensor which uses a meaningful amount of memory available on the arduino boards. It is recommended to use this library on boards that have more memory such as the arduino MKR. It won't compile/work on the arduino UNO due to the high amount of memory needed.
+**Warning:** This library is based on the STMicroelectronics API for the vl53l1x sensor which uses a meaningful amount of memory available on the arduino boards. It is recommended to use this library on boards that have more memory such as the Arduino MKR. It won't compile/work on the Arduino UNO due to the high amount of memory needed.
 
 ## Usage
 
