@@ -311,13 +311,13 @@ VL53L1_Error VL53L1_WaitValueMaskEx(
 {
 	uint8_t data;
     VL53L1_Error status;
-
-    while (timeout_ms > 0){
+    int32_t timeout = timeout_ms;
+    while (timeout > 0){
         status = VL53L1_RdByte(pdev, index, &data);
         if (status != VL53L1_ERROR_NONE) { return status; }
         if ((data & mask) == value) { return VL53L1_ERROR_NONE; }
         delay(poll_delay_ms);
-        timeout_ms -= min(poll_delay_ms, timeout_ms);
+        timeout -= poll_delay_ms;
     }
 
     return VL53L1_ERROR_TIME_OUT;

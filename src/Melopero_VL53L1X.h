@@ -25,7 +25,7 @@ class Melopero_VL53L1X {
         VL53L1_RangingMeasurementData_t measurementData;
         bool dataReady;
         VL53L1_DetectionConfig_t interruptConfig;
-        //char errorString[VL53L1_MAX_STRING_LENGTH];
+        char errorString[VL53L1_MAX_STRING_LENGTH];
 
     //Methods
     public:
@@ -67,6 +67,6 @@ class Melopero_VL53L1X {
         VL53L1_Error disableInterrupt();
         VL53L1_Error getInterruptConfig();
 
-        //VL53L1_Error getErrorDescription(VL53L1_Error error);
+        VL53L1_Error getErrorDescription(VL53L1_Error error);
 };
 #endif // Melopero_VL53L1X_H_INCLUDED
