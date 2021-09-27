@@ -3,24 +3,25 @@
 Melopero_VL53L1X sensor;
 
 void setup() {
-  Serial.begin(115200);
+  Serial.begin(9600);
   while(!Serial);
-  Serial.println("Starting...");
+
+  Wire.begin();
+
   VL53L1_Error stat = 0;
+  stat = sensor.initI2C(); // use sensor.initI2C(i2c_address, Wire1); to use Wire1 instead of Wire
   Serial.println(stat);
-  Serial.println(sensor.errorString);
-  Serial.println("SR done...");
+  stat = sensor.softwareReset();
+  Serial.println(stat);
   stat = sensor.waitDeviceBooted();
   Serial.println(stat);
-  //Serial.println(sensor.errorString);
-  sensor.dataInit();
-  Serial.println("DATA INIT done...");
-  //Serial.println(sensor.errorString);
-  sensor.staticInit();
-  Serial.println("STATIC INIT done...");
-  //Serial.println(sensor.errorString);
-  Serial.println("Device Initialized...");
-  
+
+  stat = sensor.dataInit();
+  Serial.println(stat);
+
+  stat = sensor.staticInit();
+  Serial.println(stat);
+
   /* (1) Three important functions to use to configure the sensor in fast mode */
   /*Device preset modes:
    * VL53L1_PRESETMODE_AUTONOMOUS

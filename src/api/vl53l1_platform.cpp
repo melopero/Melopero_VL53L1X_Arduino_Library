@@ -70,8 +70,7 @@
 #include <string.h>
 
 //Melopero include(s):
-#include <Arduino.h>
-#include <Wire.h>
+#include "Wire.h"
 // #include <time.h>
 // #include <math.h>
 
@@ -118,11 +117,11 @@
 
 VL53L1_Error VL53L1_WriteMulti(VL53L1_DEV Dev, uint16_t index, uint8_t *pdata, uint32_t count) {
     VL53L1_Error Status = VL53L1_ERROR_NONE;
-    Wire.beginTransmission(Dev->I2cDevAddr);
-    Wire.write((uint8_t) (index >> 8));
-    Wire.write((uint8_t) (index & 0xFF));
-    Wire.write(pdata, count);
-    uint8_t i2cStatus = Wire.endTransmission();
+    Dev->I2cHandle->i2c->beginTransmission(Dev->I2cDevAddr);
+    Dev->I2cHandle->i2c->write((uint8_t) (index >> 8));
+    Dev->I2cHandle->i2c->write((uint8_t) (index & 0xFF));
+    Dev->I2cHandle->i2c->write(pdata, count);
+    uint8_t i2cStatus = Dev->I2cHandle->i2c->endTransmission();
     if (i2cStatus != 0)
         Status = VL53L1_ERROR_CONTROL_INTERFACE;
     return Status;
@@ -131,19 +130,19 @@ VL53L1_Error VL53L1_WriteMulti(VL53L1_DEV Dev, uint16_t index, uint8_t *pdata, u
 // the ranging_sensor_comms.dll will take care of the page selection
 VL53L1_Error VL53L1_ReadMulti(VL53L1_DEV Dev, uint16_t index, uint8_t *pdata, uint32_t count) {
     VL53L1_Error Status = VL53L1_ERROR_NONE;
-    Wire.beginTransmission(Dev->I2cDevAddr);
-    Wire.write((uint8_t) (index >> 8));
-    Wire.write((uint8_t) (index & 0xFF));
-    uint8_t i2cStatus = Wire.endTransmission();
+    Dev->I2cHandle->i2c->beginTransmission(Dev->I2cDevAddr);
+    Dev->I2cHandle->i2c->write((uint8_t) (index >> 8));
+    Dev->I2cHandle->i2c->write((uint8_t) (index & 0xFF));
+    uint8_t i2cStatus = Dev->I2cHandle->i2c->endTransmission();
     if (i2cStatus != 0) return VL53L1_ERROR_CONTROL_INTERFACE;
 
     uint32_t dataIndex = 0;
     do {
         uint8_t request = count > 32 ? 32 : count;
-        Wire.requestFrom(Dev->I2cDevAddr, request);
+        Dev->I2cHandle->i2c->requestFrom(Dev->I2cDevAddr, request);
         for (uint8_t i = 0; i < request; i++){
-            if (Wire.available()){
-                pdata[dataIndex] = Wire.read();
+            if (Dev->I2cHandle->i2c->available()){
+                pdata[dataIndex] = Dev->I2cHandle->i2c->read();
                 dataIndex++;
                 count--;
             }
@@ -158,11 +157,11 @@ VL53L1_Error VL53L1_ReadMulti(VL53L1_DEV Dev, uint16_t index, uint8_t *pdata, ui
 
 VL53L1_Error VL53L1_WrByte(VL53L1_DEV Dev, uint16_t index, uint8_t data) {
     VL53L1_Error Status = VL53L1_ERROR_NONE;
-    Wire.beginTransmission(Dev->I2cDevAddr);
-    Wire.write((uint8_t) (index >> 8));
-    Wire.write((uint8_t) (index & 0xFF));
-    Wire.write(data);
-    uint8_t i2cStatus = Wire.endTransmission();
+    Dev->I2cHandle->i2c->beginTransmission(Dev->I2cDevAddr);
+    Dev->I2cHandle->i2c->write((uint8_t) (index >> 8));
+    Dev->I2cHandle->i2c->write((uint8_t) (index & 0xFF));
+    Dev->I2cHandle->i2c->write(data);
+    uint8_t i2cStatus = Dev->I2cHandle->i2c->endTransmission();
     if (i2cStatus != 0)
         Status = VL53L1_ERROR_CONTROL_INTERFACE;
     return Status;
@@ -170,12 +169,12 @@ VL53L1_Error VL53L1_WrByte(VL53L1_DEV Dev, uint16_t index, uint8_t data) {
 
 VL53L1_Error VL53L1_WrWord(VL53L1_DEV Dev, uint16_t index, uint16_t data) {
     VL53L1_Error Status = VL53L1_ERROR_NONE;
-    Wire.beginTransmission(Dev->I2cDevAddr);
-    Wire.write((uint8_t) (index >> 8));
-    Wire.write((uint8_t) (index & 0xFF));
-    Wire.write((uint8_t) (data >> 8));
-    Wire.write((uint8_t) (data & 0xFF));
-    uint8_t i2cStatus = Wire.endTransmission();
+    Dev->I2cHandle->i2c->beginTransmission(Dev->I2cDevAddr);
+    Dev->I2cHandle->i2c->write((uint8_t) (index >> 8));
+    Dev->I2cHandle->i2c->write((uint8_t) (index & 0xFF));
+    Dev->I2cHandle->i2c->write((uint8_t) (data >> 8));
+    Dev->I2cHandle->i2c->write((uint8_t) (data & 0xFF));
+    uint8_t i2cStatus = Dev->I2cHandle->i2c->endTransmission();
     if (i2cStatus != 0)
         Status = VL53L1_ERROR_CONTROL_INTERFACE;
     return Status;
@@ -183,14 +182,14 @@ VL53L1_Error VL53L1_WrWord(VL53L1_DEV Dev, uint16_t index, uint16_t data) {
 
 VL53L1_Error VL53L1_WrDWord(VL53L1_DEV Dev, uint16_t index, uint32_t data) {
     VL53L1_Error Status = VL53L1_ERROR_NONE;
-    Wire.beginTransmission(Dev->I2cDevAddr);
-    Wire.write((uint8_t) (index >> 8));
-    Wire.write((uint8_t) (index & 0xFF));
-    Wire.write((uint8_t) (data >> 24));
-    Wire.write((uint8_t) ((data >> 16) & 0xFF));
-    Wire.write((uint8_t) ((data >> 8) & 0xFF));
-    Wire.write((uint8_t) (data & 0xFF));
-    uint8_t i2cStatus = Wire.endTransmission();
+    Dev->I2cHandle->i2c->beginTransmission(Dev->I2cDevAddr);
+    Dev->I2cHandle->i2c->write((uint8_t) (index >> 8));
+    Dev->I2cHandle->i2c->write((uint8_t) (index & 0xFF));
+    Dev->I2cHandle->i2c->write((uint8_t) (data >> 24));
+    Dev->I2cHandle->i2c->write((uint8_t) ((data >> 16) & 0xFF));
+    Dev->I2cHandle->i2c->write((uint8_t) ((data >> 8) & 0xFF));
+    Dev->I2cHandle->i2c->write((uint8_t) (data & 0xFF));
+    uint8_t i2cStatus = Dev->I2cHandle->i2c->endTransmission();
     if (i2cStatus != 0)
         Status = VL53L1_ERROR_CONTROL_INTERFACE;
     return Status;
@@ -211,15 +210,15 @@ VL53L1_Error VL53L1_UpdateByte(VL53L1_DEV Dev, uint16_t index, uint8_t AndData, 
 
 VL53L1_Error VL53L1_RdByte(VL53L1_DEV Dev, uint16_t index, uint8_t *data) {
     VL53L1_Error Status = VL53L1_ERROR_NONE;
-    Wire.beginTransmission(Dev->I2cDevAddr);
-    Wire.write((uint8_t) (index >> 8));
-    Wire.write((uint8_t) (index & 0xFF));
-    uint8_t i2cStatus = Wire.endTransmission();
+    Dev->I2cHandle->i2c->beginTransmission(Dev->I2cDevAddr);
+    Dev->I2cHandle->i2c->write((uint8_t) (index >> 8));
+    Dev->I2cHandle->i2c->write((uint8_t) (index & 0xFF));
+    uint8_t i2cStatus = Dev->I2cHandle->i2c->endTransmission();
     if (i2cStatus != 0) return VL53L1_ERROR_CONTROL_INTERFACE;
 
-    Wire.requestFrom(Dev->I2cDevAddr, 1);
-    if (Wire.available()){
-        *data = Wire.read();
+    Dev->I2cHandle->i2c->requestFrom(Dev->I2cDevAddr, 1);
+    if (Dev->I2cHandle->i2c->available()){
+        *data = Dev->I2cHandle->i2c->read();
     }
     else {
         Status = VL53L1_ERROR_CONTROL_INTERFACE;
@@ -229,16 +228,16 @@ VL53L1_Error VL53L1_RdByte(VL53L1_DEV Dev, uint16_t index, uint8_t *data) {
 
 VL53L1_Error VL53L1_RdWord(VL53L1_DEV Dev, uint16_t index, uint16_t *data) {
     VL53L1_Error Status = VL53L1_ERROR_NONE;
-    Wire.beginTransmission(Dev->I2cDevAddr);
-    Wire.write((uint8_t) (index >> 8));
-    Wire.write((uint8_t) (index & 0xFF));
-    uint8_t i2cStatus = Wire.endTransmission();
+    Dev->I2cHandle->i2c->beginTransmission(Dev->I2cDevAddr);
+    Dev->I2cHandle->i2c->write((uint8_t) (index >> 8));
+    Dev->I2cHandle->i2c->write((uint8_t) (index & 0xFF));
+    uint8_t i2cStatus = Dev->I2cHandle->i2c->endTransmission();
     if (i2cStatus != 0) return VL53L1_ERROR_CONTROL_INTERFACE;
 
-    Wire.requestFrom(Dev->I2cDevAddr, 2);
-    if(Wire.available() >= 2){
-        *data |= (Wire.read() << 8);
-        *data |= Wire.read();
+    Dev->I2cHandle->i2c->requestFrom(Dev->I2cDevAddr, 2);
+    if(Dev->I2cHandle->i2c->available() >= 2){
+        *data |= (Dev->I2cHandle->i2c->read() << 8);
+        *data |= Dev->I2cHandle->i2c->read();
     }
     else {
         Status = VL53L1_ERROR_CONTROL_INTERFACE;
@@ -248,18 +247,18 @@ VL53L1_Error VL53L1_RdWord(VL53L1_DEV Dev, uint16_t index, uint16_t *data) {
 
 VL53L1_Error VL53L1_RdDWord(VL53L1_DEV Dev, uint16_t index, uint32_t *data) {
     VL53L1_Error Status = VL53L1_ERROR_NONE;
-    Wire.beginTransmission(Dev->I2cDevAddr);
-    Wire.write((uint8_t) (index >> 8));
-    Wire.write((uint8_t) (index & 0xFF));
-    uint8_t i2cStatus = Wire.endTransmission();
+    Dev->I2cHandle->i2c->beginTransmission(Dev->I2cDevAddr);
+    Dev->I2cHandle->i2c->write((uint8_t) (index >> 8));
+    Dev->I2cHandle->i2c->write((uint8_t) (index & 0xFF));
+    uint8_t i2cStatus = Dev->I2cHandle->i2c->endTransmission();
     if (i2cStatus != 0) return VL53L1_ERROR_CONTROL_INTERFACE;
 
-    Wire.requestFrom(Dev->I2cDevAddr, 2);
-    if(Wire.available() >= 4){
-        *data |= (Wire.read() << 24);
-        *data |= (Wire.read() << 16);
-        *data |= (Wire.read() << 8);
-        *data |= Wire.read();
+    Dev->I2cHandle->i2c->requestFrom(Dev->I2cDevAddr, 4);
+    if(Dev->I2cHandle->i2c->available() >= 4){
+        *data |= (Dev->I2cHandle->i2c->read() << 24);
+        *data |= (Dev->I2cHandle->i2c->read() << 16);
+        *data |= (Dev->I2cHandle->i2c->read() << 8);
+        *data |= Dev->I2cHandle->i2c->read();
     }
     else {
         Status = VL53L1_ERROR_CONTROL_INTERFACE;
@@ -285,7 +284,7 @@ VL53L1_Error VL53L1_GetTickCount(
 
 VL53L1_Error VL53L1_GetTimerFrequency(int32_t *ptimer_freq_hz)
 {
-	VL53L1_Error status  = VL53L1_ERROR_NONE;
+	VL53L1_Error status  = VL53L1_ERROR_NOT_IMPLEMENTED;//VL53L1_ERROR_NONE;
 	return status;
 }
 
@@ -309,8 +308,16 @@ VL53L1_Error VL53L1_WaitValueMaskEx(
 	uint16_t      index,
 	uint8_t       value,
 	uint8_t       mask,
-	uint32_t      poll_delay_ms)
-{
-	VL53L1_Error status  = VL53L1_ERROR_NONE;
-	return status;
+	uint32_t      poll_delay_ms){
+    uint8_t data;
+    VL53L1_Error status;
+
+    while (timeout_ms > 0){
+        status = VL53L1_RdByte(pdev, index, &data);
+        if (status != VL53L1_ERROR_NONE) { return status; }
+        if ((data & mask) == value) { return VL53L1_ERROR_NONE; }
+        VL53L1_WaitMs(pdev, poll_delay_ms);
+        timeout_ms -= min(poll_delay_ms, timeout_ms);
+    }
+    return VL53L1_ERROR_TIME_OUT;
 }

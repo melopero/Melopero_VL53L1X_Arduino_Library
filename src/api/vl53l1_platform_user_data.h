@@ -65,6 +65,8 @@
 #define _VL53L1_PLATFORM_USER_DATA_H_
 // #include "stm32xxx_hal.h"
 #include "vl53l1_def.h"
+#include "Arduino.h"
+#include "Wire.h"
 #ifdef __cplusplus
 extern "C"
 {
@@ -72,7 +74,7 @@ extern "C"
 
 
 typedef struct {
-    uint32_t dummy;
+    TwoWire *i2c;
 } I2C_HandleTypeDef;
 
 typedef struct {

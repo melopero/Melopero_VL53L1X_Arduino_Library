@@ -3,16 +3,18 @@
 #define Melopero_VL53L1X_H_INCLUDED
 
 #include "Arduino.h"
+#include "Wire.h"
 #include "api/vl53l1_api.h"
 //#include "api/vl53l1_error_codes.h"
 //#include "api/vl53l1_error_strings.h"
 //#include "api/vl53l1_platform_user_data.h"
 
-#define DEFAULT_I2C_ADDRESS 0x29
+#define DEFAULT_I2C_ADDRESS 0x29 //0x29
 
 class Melopero_VL53L1X {
     //Members
     public:
+        I2C_HandleTypeDef i2c_handle;
         VL53L1_Dev_t dev;
         VL53L1_DEV device;
         VL53L1_PresetModes presetMode;
@@ -23,13 +25,15 @@ class Melopero_VL53L1X {
         VL53L1_RangingMeasurementData_t measurementData;
         bool dataReady;
         VL53L1_DetectionConfig_t interruptConfig;
-        char errorString[VL53L1_MAX_STRING_LENGTH];
+        //char errorString[VL53L1_MAX_STRING_LENGTH];
 
     //Methods
     public:
-        Melopero_VL53L1X(uint8_t i2cAddr = DEFAULT_I2C_ADDRESS);
+        Melopero_VL53L1X();
 
         //Device initialization functions
+        VL53L1_Error initI2C(uint8_t i2cAddr = DEFAULT_I2C_ADDRESS, TwoWire &bus = Wire);
+        VL53L1_Error initSensor();
         VL53L1_Error setDeviceAddress(uint8_t newAddress);
         VL53L1_Error dataInit();
         VL53L1_Error staticInit();
@@ -62,6 +66,6 @@ class Melopero_VL53L1X {
         VL53L1_Error disableInterrupt();
         VL53L1_Error getInterruptConfig();
 
-        VL53L1_Error getErrorDescription(VL53L1_Error error);
+        //VL53L1_Error getErrorDescription(VL53L1_Error error);
 };
 #endif // Melopero_VL53L1X_H_INCLUDED

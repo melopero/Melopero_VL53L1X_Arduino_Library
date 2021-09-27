@@ -112,6 +112,6 @@
 	/*!< Allocates storage for return and reference restults */
 
 //Melopero: changed from 512 to 64 bytes due to arduino memory limits
-#define VL53L1_MAX_STRING_LENGTH 64
+#define VL53L1_MAX_STRING_LENGTH 512 // use 64 for limited memory
 
 #endif  /* _VL53L1_PLATFORM_USER_CONFIG_H_ */
