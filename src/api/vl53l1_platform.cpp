@@ -236,8 +236,8 @@ VL53L1_Error VL53L1_RdWord(VL53L1_DEV Dev, uint16_t index, uint16_t *data) {
 
     Dev->I2cHandle->i2c->requestFrom(Dev->I2cDevAddr, 2);
     if(Dev->I2cHandle->i2c->available() >= 2){
-        *data |= (Dev->I2cHandle->i2c->read() << 8);
-        *data |= Dev->I2cHandle->i2c->read();
+        *data |= (uint16_t) (Dev->I2cHandle->i2c->read() << 8);
+        *data |= (uint16_t)  Dev->I2cHandle->i2c->read();
     }
     else {
         Status = VL53L1_ERROR_CONTROL_INTERFACE;
@@ -255,10 +255,10 @@ VL53L1_Error VL53L1_RdDWord(VL53L1_DEV Dev, uint16_t index, uint32_t *data) {
 
     Dev->I2cHandle->i2c->requestFrom(Dev->I2cDevAddr, 4);
     if(Dev->I2cHandle->i2c->available() >= 4){
-        *data |= (Dev->I2cHandle->i2c->read() << 24);
-        *data |= (Dev->I2cHandle->i2c->read() << 16);
-        *data |= (Dev->I2cHandle->i2c->read() << 8);
-        *data |= Dev->I2cHandle->i2c->read();
+        *data |= (uint32_t) (Dev->I2cHandle->i2c->read() << 24);
+        *data |= (uint32_t) (Dev->I2cHandle->i2c->read() << 16);
+        *data |= (uint32_t) (Dev->I2cHandle->i2c->read() << 8);
+        *data |= (uint32_t) Dev->I2cHandle->i2c->read();
     }
     else {
         Status = VL53L1_ERROR_CONTROL_INTERFACE;
@@ -284,8 +284,7 @@ VL53L1_Error VL53L1_GetTickCount(
 
 VL53L1_Error VL53L1_GetTimerFrequency(int32_t *ptimer_freq_hz)
 {
-	VL53L1_Error status  = VL53L1_ERROR_NOT_IMPLEMENTED;//VL53L1_ERROR_NONE;
-	return status;
+		return VL53L1_ERROR_NOT_IMPLEMENTED;
 }
 
 VL53L1_Error VL53L1_WaitMs(VL53L1_Dev_t *pdev, int32_t wait_ms){
@@ -308,16 +307,18 @@ VL53L1_Error VL53L1_WaitValueMaskEx(
 	uint16_t      index,
 	uint8_t       value,
 	uint8_t       mask,
-	uint32_t      poll_delay_ms){
-    uint8_t data;
+	uint32_t      poll_delay_ms)
+{
+	uint8_t data;
     VL53L1_Error status;
 
     while (timeout_ms > 0){
         status = VL53L1_RdByte(pdev, index, &data);
         if (status != VL53L1_ERROR_NONE) { return status; }
         if ((data & mask) == value) { return VL53L1_ERROR_NONE; }
-        VL53L1_WaitMs(pdev, poll_delay_ms);
+        delay(poll_delay_ms);
         timeout_ms -= min(poll_delay_ms, timeout_ms);
     }
+
     return VL53L1_ERROR_TIME_OUT;
 }

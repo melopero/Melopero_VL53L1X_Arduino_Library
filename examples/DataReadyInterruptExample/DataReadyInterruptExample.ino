@@ -2,15 +2,21 @@
 
 Melopero_VL53L1X sensor;
 
+// Interrupt variables and callback
+bool interruptOccurred = false;
+byte intPin = 1;
+
+void interruptCallback(){
+    interruptOccurred = true;
+}
+
+
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
   while(!Serial);
   Serial.println("Starting...");
 
   VL53L1_Error status = 0;
-  Wire.begin();
-  sensor.initI2C();
-  
   status = sensor.initDevice();
   printStatus("Device initialized : ", sensor.errorString);
   
@@ -28,24 +34,28 @@ void setup() {
   printStatus("Set inter measurement time: ", sensor.errorString);
 
   //If the above constraints are not respected the status is -4: VL53L1_ERROR_INVALID_PARAMS
-
+  
+  // Set the intPin pin to listen for hardware interrupts
+  attachInterrupt(digitalPinToInterrupt(intPin), interruptCallback, CHANGE);
+  
+  // Enable the data ready interrupts
+  sensor.enableInterruptOnDataReady();
   sensor.startMeasurement();
 }
 
 void loop() {
   VL53L1_Error status = 0;
+  
+  if (interruptOccurred){
+    status = sensor.getRangingMeasurementData();
+    if (status != VL53L1_ERROR_NONE) printStatus("Error in get measurement data: ",  sensor.errorString);
 
-  status = sensor.waitMeasurementDataReady();
-  if (status != VL53L1_ERROR_NONE) printStatus("Error in wait data ready: ",  sensor.errorString);
+    status = sensor.clearInterruptAndStartMeasurement();
+    if (status != VL53L1_ERROR_NONE) printStatus("Error in clear interrupts: ",  sensor.errorString);
 
-  status = sensor.getRangingMeasurementData();
-  if (status != VL53L1_ERROR_NONE) printStatus("Error in get measurement data: ",  sensor.errorString);
-
-  status = sensor.clearInterruptAndStartMeasurement();
-  if (status != VL53L1_ERROR_NONE) printStatus("Error in clear interrupts: ",  sensor.errorString);
-
-  Serial.print((float)sensor.measurementData.RangeMilliMeter + (float)sensor.measurementData.RangeFractionalPart/256.0);
-  Serial.println(" mm");
+    Serial.print((float)sensor.measurementData.RangeMilliMeter + (float)sensor.measurementData.RangeFractionalPart/256.0);
+    Serial.println(" mm");
+  }
 }
 
 void printStatus(String msg, String status){
