@@ -70,6 +70,7 @@
 #include <string.h>
 
 //Melopero include(s):
+#include "Arduino.h"
 #include "Wire.h"
 // #include <time.h>
 // #include <math.h>
@@ -307,18 +308,18 @@ VL53L1_Error VL53L1_WaitValueMaskEx(
 	uint16_t      index,
 	uint8_t       value,
 	uint8_t       mask,
-	uint32_t      poll_delay_ms)
-{
-	uint8_t data;
+	uint32_t      poll_delay_ms){
+	
+    uint8_t data;
     VL53L1_Error status;
-    int32_t timeout = timeout_ms;
-    while (timeout > 0){
+
+    while (timeout_ms > 0) {
         status = VL53L1_RdByte(pdev, index, &data);
         if (status != VL53L1_ERROR_NONE) { return status; }
         if ((data & mask) == value) { return VL53L1_ERROR_NONE; }
         delay(poll_delay_ms);
-        timeout -= poll_delay_ms;
-    }
+        timeout_ms -= min(poll_delay_ms, timeout_ms);
+    } 
 
     return VL53L1_ERROR_TIME_OUT;
 }

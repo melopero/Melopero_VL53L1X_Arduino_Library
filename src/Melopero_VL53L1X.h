@@ -35,7 +35,6 @@ class Melopero_VL53L1X {
         VL53L1_Error initI2C(uint8_t i2cAddr = DEFAULT_I2C_ADDRESS, TwoWire &bus = Wire);
         VL53L1_Error initSensor();
         VL53L1_Error setDeviceAddress(uint8_t newAddress);
-        VL53L1_Error initDevice();
         VL53L1_Error dataInit();
         VL53L1_Error staticInit();
         VL53L1_Error waitDeviceBooted();
