@@ -6,7 +6,8 @@ Melopero_VL53L1X	KEYWORD1
 # Methods and Functions (KEYWORD2)
 # initialization functions
 setDeviceAddress	KEYWORD2
-initDevice	KEYWORD2
+initI2C KEYWORD2
+initSensor	KEYWORD2
 dataInit	KEYWORD2
 staticInit	KEYWORD2
 waitDeviceBooted	KEYWORD2
