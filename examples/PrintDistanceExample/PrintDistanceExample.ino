@@ -8,8 +8,8 @@ void setup() {
   Serial.println("Starting...");
 
   VL53L1_Error status = 0;
-  Wire1.begin();
-  sensor.initI2C(0x29, Wire1);
+  Wire.begin(); // use Wire1.begin() to use I2C-1 
+  sensor.initI2C(0x29, Wire); // use sensor.initI2C(0x29, Wire1); to use I2C-1
   
   status = sensor.initSensor();
   printStatus("Device initialized : ", status);
@@ -29,7 +29,8 @@ void setup() {
 
   //If the above constraints are not respected the status is -4: VL53L1_ERROR_INVALID_PARAMS
 
-  sensor.startMeasurement();
+  status = sensor.clearInterruptAndStartMeasurement();
+  printStatus("Start measurement: ", status);
 }
 
 void loop() {
